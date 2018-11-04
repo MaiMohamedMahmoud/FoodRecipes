@@ -31,6 +31,7 @@ public class FoodList extends AppCompatActivity {
     RecyclerView rvListFood;
     FatSecretSearchFood mFatSecretSearch;
     private List<Food_> foodList;
+    RecyclerView.Adapter foodAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,7 +40,8 @@ public class FoodList extends AppCompatActivity {
         rvListFood = (RecyclerView) findViewById(R.id.food_list);
         rvListFood.setLayoutManager(new LinearLayoutManager(this));
         foodList = new ArrayList<>();
-
+        foodAdapter = new FoodAdapter(foodList);
+        rvListFood.setAdapter(foodAdapter);
         mFatSecretSearch = new FatSecretSearchFood();
         searchFood("soup", 1);
 
@@ -94,7 +96,7 @@ public class FoodList extends AppCompatActivity {
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
                 Log.i("Mai", result);
-                rvListFood.setAdapter(new FoodAdapter(foodList));
+                foodAdapter.notifyDataSetChanged();
                 if (result.equals("Error"))
                     Toast.makeText(getApplicationContext(), "No Items Containing Your Search", Toast.LENGTH_SHORT).show();
             }
