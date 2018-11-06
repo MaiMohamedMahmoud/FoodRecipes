@@ -16,7 +16,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -38,63 +40,87 @@ public class FatSecretSearchFood {
     final static private String APP_SECRET = "d510bf3fe2e14aa4b673105505ff4f0e";
     final static private String APP_URL = "http://platform.fatsecret.com/rest/server.api";
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+    private String resuOfsignature="";
+    private static String timestampValue ="";
+    private static String nonceValue="";
     JSONObject food;
 
-    public JSONObject searchFood(String searchFood, int page) throws UnsupportedEncodingException {
+//    public JSONObject searchFood(String searchFood, int page) throws UnsupportedEncodingException {
+//        final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParams(page)));
+//        final String[] template = new String[1];
+//        params.add("method=foods.search");
+//        params.add("search_expression=" + Uri.encode(searchFood));
+//        params.add("oauth_signature=" + sign(APP_METHOD, APP_URL, params.toArray(template), searchFood));
+//
+//        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+//        Thread thread = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                synchronized (this) {
+//                    BufferedReader reader = null;
+//                    try {
+//
+//
+//
+//                        URL url = new URL(APP_URL + "?" + paramify(params.toArray(template)));
+//                        Log.i("URL", url.toString());
+//                        HttpURLConnection foodSearchConnection = (HttpURLConnection) new URL(url.toString()).openConnection();
+//                        reader = new BufferedReader(new InputStreamReader(foodSearchConnection.getInputStream()));
+//                        StringBuilder sb = new StringBuilder();
+//                        String line = null;
+//                        while ((line = reader.readLine()) != null) {
+//                            sb.append(line + "\n");
+//                        }
+//                        String result = sb.toString();
+//                        JSONObject jObject = new JSONObject(result);
+//                        food = jObject.getJSONObject("foods");
+//                        Log.i("Food search", food.toString());
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    } finally {
+//                        try {
+//                            reader.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//
+//        thread.start();
+//        while (thread.getState() == Thread.State.RUNNABLE) {
+//            try {
+//                thread.sleep(1000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//        Log.i(" YARAAAAB", thread.getState().toString());
+//        Log.i(" YARAAAAB", thread.getState() + food.toString());
+//        return food;
+//    }
+
+    public String searchFood(String searchFood, int page) throws UnsupportedEncodingException {
         final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParams(page)));
         final String[] template = new String[1];
         params.add("method=foods.search");
         params.add("search_expression=" + Uri.encode(searchFood));
         params.add("oauth_signature=" + sign(APP_METHOD, APP_URL, params.toArray(template), searchFood));
-        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    BufferedReader reader = null;
-                    try {
+        String url = null;
 
-                        URL url = new URL(APP_URL + "?" + paramify(params.toArray(template)));
-                        Log.i("URL", url.toString());
-                        HttpURLConnection foodSearchConnection = (HttpURLConnection) new URL(url.toString()).openConnection();
-                        reader = new BufferedReader(new InputStreamReader(foodSearchConnection.getInputStream()));
-                        StringBuilder sb = new StringBuilder();
-                        String line = null;
-                        while ((line = reader.readLine()) != null) {
-                            sb.append(line + "\n");
-                        }
-                        String result = sb.toString();
-                        JSONObject jObject = new JSONObject(result);
-                        food = jObject.getJSONObject("foods");
-                        Log.i("Food search", food.toString());
+            url =  paramify(params.toArray(template));
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-
-        thread.start();
-        while(thread.getState() == Thread.State.RUNNABLE) {
-            try {
-                thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
+        Log.i("URL", url.toString());
+        String[] par = params.toArray(template);
+        for (int i = 0; i < par.length; i++) {
+            Log.i("tag param", par[i] + "");
         }
-        Log.i(" YARAAAAB", thread.getState().toString());
-        Log.i(" YARAAAAB", thread.getState()+food.toString());
-        return food;
+        return resuOfsignature;
     }
 
     /**
@@ -121,17 +147,60 @@ public class FatSecretSearchFood {
     }
 
     private static String[] generateOauthParams(int i) {
+        timestampValue = Long.valueOf(System.currentTimeMillis() * 2).toString();
+        nonceValue=nonce();
         return new String[]{
                 "oauth_consumer_key=" + APP_KEY,          // Your API key when you registered as a developer
                 "oauth_signature_method=HMAC-SHA1",   //The method used to generate the signature (only HMAC-SHA1 is supported)
-                "oauth_timestamp=" +                    //The date and time, expressed in the number of seconds since January 1, 1970 00:00:00 GMT.
-                        Long.valueOf(System.currentTimeMillis() * 2).toString(), // Should be  Long.valueOf(System.currentTimeMillis() / 1000).toString()
-                "oauth_nonce=" + nonce(),               // A randomly generated string for a request that can be combined with the timestamp to produce a unique value
+                "oauth_timestamp=" + timestampValue                    //The date and time, expressed in the number of seconds since January 1, 1970 00:00:00 GMT.
+                        , // Should be  Long.valueOf(System.currentTimeMillis() / 1000).toString()
+                "oauth_nonce=" + nonceValue ,               // A randomly generated string for a request that can be combined with the timestamp to produce a unique value
                 "oauth_version=1.0",                    // MUST be "1.0"
                 "format=json",                          // The desired response format. Valid reponse formats are "xml" or "json" (default value is "xml").
                 "page_number=" + i,                     // The zero-based offset into the results for the query. Use this parameter with max_results to request successive pages of search results (default value is 0).
                 "max_results=" + 20};                   // The maximum number of results to return (default value is 20). This number cannot be greater than 50.
     }
+
+    public String getoauth_consumer_key() {
+        return APP_KEY;
+    }
+
+    public String getoauth_signature_method() {
+        return "HMAC-SHA1";
+    }
+
+    public String getoauth_timestamp() {
+        return timestampValue;
+    }
+
+    public String getoauth_nonce() {
+        return nonceValue;
+    }
+
+    public String getoauth_version() {
+        return "1.0";
+    }
+
+    public String getformat() {
+        return "json";
+    }
+
+    public String getpage_number(int i) {
+        return "" + i;
+    }
+
+    public String getmax_results() {
+        return "20";
+    }
+
+    public String getmethod() {
+        return "foods.search";
+    }
+
+    public String getsearch_expression(String searchFood) {
+        return Uri.encode(searchFood);
+    }
+
 
     public String sign(String method, String uri, String[] params, String Search) throws UnsupportedEncodingException {
         String encodedURI = encode(uri);
@@ -147,8 +216,9 @@ public class FatSecretSearchFood {
             Log.i("Url m", m.getAlgorithm());
             Log.i("Url", sk.getEncoded().toString());
             Log.i("URL Sign", encode(new String(Base64.encode(m.doFinal(s.getBytes()), Base64.DEFAULT)).trim()));
-
-            return encode(new String(Base64.encode(m.doFinal(s.getBytes()), Base64.DEFAULT)).trim());
+            resuOfsignature =  encode(new String(Base64.encode(m.doFinal(s.getBytes()), Base64.DEFAULT)).trim());
+            Log.i("url res of sign", resuOfsignature);
+            return resuOfsignature;
         } catch (java.security.NoSuchAlgorithmException e) {
             Log.w("FatSecret_TEST FAIL", e.getMessage());
             return null;
