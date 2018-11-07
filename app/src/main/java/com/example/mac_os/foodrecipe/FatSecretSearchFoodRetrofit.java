@@ -17,6 +17,9 @@ import android.widget.Toast;
 import com.example.mac_os.foodrecipe.Model.Food;
 import com.example.mac_os.foodrecipe.Model.Food_;
 import com.example.mac_os.foodrecipe.Model.Foods;
+import com.example.mac_os.foodrecipe.Model.Recipe;
+import com.example.mac_os.foodrecipe.Model.Recipe_;
+import com.example.mac_os.foodrecipe.Model.Recipes;
 import com.example.mac_os.foodrecipe.data.FatSecretApi;
 import com.example.mac_os.foodrecipe.data.Utility.ApiUtils;
 import com.google.gson.JsonObject;
@@ -44,9 +47,10 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
     FatSecretSearchFood mFatSecretSearch;
     //private List<Food_> foodDetailsList;
     private List<Food_> foodList;
+    private List<Recipe_> recipesList;
     private FatSecretApi mSecretApi;
     RecyclerView.Adapter foodAdapter;
-
+    RecyclerView.Adapter RecipeAdapter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,11 +58,16 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         rvListFood = (RecyclerView) findViewById(R.id.food_list);
         rvListFood.setLayoutManager(new LinearLayoutManager(this));
         foodList = new ArrayList<>();
+        recipesList = new ArrayList<>();
         foodAdapter = new FatSecretSearchFoodRetrofit.FoodAdapter(foodList);
+        RecipeAdapter = new FatSecretSearchFoodRetrofit.RecipeAdapter(recipesList);
+
         rvListFood.setAdapter(foodAdapter);
+        rvListFood.setAdapter(RecipeAdapter);
         mSecretApi = ApiUtils.getFoodService();
         mFatSecretSearch = new FatSecretSearchFood();
         searchFood("soup", 1);
+        searchRecipe("Chicken", 1);
         //mSecretApi.getFoodBySearch().enqueue(foodsCallback);
 
     }
@@ -145,6 +154,52 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
 
     }
 
+    private void searchRecipe(final String item, final int page_num) {
+
+        try {
+            //String url = mFatSecretSearch.searchFood(item, page_num);
+            String oauth_signature = mFatSecretSearch.searchRecipe(item, page_num);
+            String oauth_consumer_key = mFatSecretSearch.getoauth_consumer_key();
+            String oauth_signature_method = mFatSecretSearch.getoauth_signature_method();
+            String oauth_timestamp = mFatSecretSearch.getoauth_timestamp();
+            String oauth_nonce = mFatSecretSearch.getoauth_nonce();
+            String oauth_version = mFatSecretSearch.getoauth_version();
+            String format = mFatSecretSearch.getformat();
+            String search_expression = mFatSecretSearch.getsearch_expression(item);
+            String max_results = mFatSecretSearch.getmax_results();
+            String method = mFatSecretSearch.getmethod();
+            String page_number = mFatSecretSearch.getpage_number(page_num);
+            mSecretApi.getRecipesBySearch(format, max_results, method, oauth_consumer_key
+                    , oauth_nonce, oauth_signature, oauth_signature_method,
+                    oauth_timestamp, oauth_version, page_number, search_expression).enqueue(recipeCallback);
+
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    Callback<Recipe> recipeCallback = new Callback<Recipe>() {
+        @Override
+        public void onResponse(Call<Recipe> call, Response<Recipe> response) {
+            Log.i("body call", call.request() + "");
+            Log.i("body response recipe", response.body() + "");
+            Recipe recipeObj = response.body();
+            Recipes recipesDetailsObj = recipeObj.getRecipes();
+            recipesList.addAll(recipesDetailsObj.getRecipe());
+            Log.i("body obj", recipesList.get(0).getRecipeName() + "");
+
+            RecipeAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onFailure(Call<Recipe> call, Throwable t) {
+            Log.i("body fail", call.request() + "Fail");
+            t.printStackTrace();
+        }
+    };
+
     Callback<Food> foodsCallback = new Callback<Food>() {
         @Override
         public void onResponse(Call<Food> call, Response<Food> response) {
@@ -220,6 +275,37 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return mFoodList.size();
+        }
+    }
+
+    private class RecipeAdapter extends RecyclerView.Adapter<FatSecretSearchFoodRetrofit.FoodHolder> {
+
+        private List<Recipe_> mRecipeList;
+
+        public RecipeAdapter(List<Recipe_> recipes) {
+            mRecipeList = recipes;
+        }
+
+        @NonNull
+        @Override
+        public FatSecretSearchFoodRetrofit.FoodHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = getLayoutInflater();
+            View v = layoutInflater.inflate(R.layout.food_list_item, parent, false);
+            return new FatSecretSearchFoodRetrofit.FoodHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull FatSecretSearchFoodRetrofit.FoodHolder holder, int position) {
+            Log.i("Desc", mRecipeList.get(position).getRecipeDescription());
+            holder.foodDescription.setText(mRecipeList.get(position).getRecipeDescription());
+            holder.foodName.setText(mRecipeList.get(position).getRecipeName());
+            holder.foodType.setText(mRecipeList.get(position).getRecipeUrl());
+        }
+
+
+        @Override
+        public int getItemCount() {
+            return mRecipeList.size();
         }
     }
 }

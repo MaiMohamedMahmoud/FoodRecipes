@@ -40,9 +40,10 @@ public class FatSecretSearchFood {
     final static private String APP_SECRET = "d510bf3fe2e14aa4b673105505ff4f0e";
     final static private String APP_URL = "http://platform.fatsecret.com/rest/server.api";
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-    private String resuOfsignature="";
-    private static String timestampValue ="";
-    private static String nonceValue="";
+    private static String MethodOfSearch = "";
+    private String resuOfsignature = "";
+    private static String timestampValue = "";
+    private static String nonceValue = "";
     JSONObject food;
 
 //    public JSONObject searchFood(String searchFood, int page) throws UnsupportedEncodingException {
@@ -106,6 +107,7 @@ public class FatSecretSearchFood {
 //    }
 
     public String searchFood(String searchFood, int page) throws UnsupportedEncodingException {
+        MethodOfSearch ="foods.search";
         final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParams(page)));
         final String[] template = new String[1];
         params.add("method=foods.search");
@@ -113,7 +115,7 @@ public class FatSecretSearchFood {
         params.add("oauth_signature=" + sign(APP_METHOD, APP_URL, params.toArray(template), searchFood));
         String url = null;
 
-            url =  paramify(params.toArray(template));
+        url = paramify(params.toArray(template));
 
         Log.i("URL", url.toString());
         String[] par = params.toArray(template);
@@ -123,6 +125,24 @@ public class FatSecretSearchFood {
         return resuOfsignature;
     }
 
+    public String searchRecipe(String searchRecipe, int page) throws UnsupportedEncodingException {
+        MethodOfSearch ="recipes.search";
+        final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParams(page)));
+        final String[] template = new String[1];
+        params.add("method=recipes.search");
+        params.add("search_expression=" + Uri.encode(searchRecipe));
+        params.add("oauth_signature=" + sign(APP_METHOD, APP_URL, params.toArray(template), searchRecipe));
+        String url = null;
+
+        url = paramify(params.toArray(template));
+
+        Log.i("URL", url.toString());
+        String[] par = params.toArray(template);
+        for (int i = 0; i < par.length; i++) {
+            Log.i("tag param", par[i] + "");
+        }
+        return resuOfsignature;
+    }
     /**
      * Returns the percent-encoded string for the given url
      *
@@ -148,13 +168,13 @@ public class FatSecretSearchFood {
 
     private static String[] generateOauthParams(int i) {
         timestampValue = Long.valueOf(System.currentTimeMillis() * 2).toString();
-        nonceValue=nonce();
+        nonceValue = nonce();
         return new String[]{
                 "oauth_consumer_key=" + APP_KEY,          // Your API key when you registered as a developer
                 "oauth_signature_method=HMAC-SHA1",   //The method used to generate the signature (only HMAC-SHA1 is supported)
                 "oauth_timestamp=" + timestampValue                    //The date and time, expressed in the number of seconds since January 1, 1970 00:00:00 GMT.
-                        , // Should be  Long.valueOf(System.currentTimeMillis() / 1000).toString()
-                "oauth_nonce=" + nonceValue ,               // A randomly generated string for a request that can be combined with the timestamp to produce a unique value
+                , // Should be  Long.valueOf(System.currentTimeMillis() / 1000).toString()
+                "oauth_nonce=" + nonceValue,               // A randomly generated string for a request that can be combined with the timestamp to produce a unique value
                 "oauth_version=1.0",                    // MUST be "1.0"
                 "format=json",                          // The desired response format. Valid reponse formats are "xml" or "json" (default value is "xml").
                 "page_number=" + i,                     // The zero-based offset into the results for the query. Use this parameter with max_results to request successive pages of search results (default value is 0).
@@ -193,8 +213,9 @@ public class FatSecretSearchFood {
         return "20";
     }
 
+
     public String getmethod() {
-        return "foods.search";
+        return  MethodOfSearch;
     }
 
     public String getsearch_expression(String searchFood) {
@@ -216,7 +237,7 @@ public class FatSecretSearchFood {
             Log.i("Url m", m.getAlgorithm());
             Log.i("Url", sk.getEncoded().toString());
             Log.i("URL Sign", encode(new String(Base64.encode(m.doFinal(s.getBytes()), Base64.DEFAULT)).trim()));
-            resuOfsignature =  encode(new String(Base64.encode(m.doFinal(s.getBytes()), Base64.DEFAULT)).trim());
+            resuOfsignature = encode(new String(Base64.encode(m.doFinal(s.getBytes()), Base64.DEFAULT)).trim());
             Log.i("url res of sign", resuOfsignature);
             return resuOfsignature;
         } catch (java.security.NoSuchAlgorithmException e) {
@@ -226,8 +247,6 @@ public class FatSecretSearchFood {
             Log.w("FatSecret_TEST FAIL", e.getMessage());
             return null;
         }
-
-
 //        return consumer.sign(url);
     }
 

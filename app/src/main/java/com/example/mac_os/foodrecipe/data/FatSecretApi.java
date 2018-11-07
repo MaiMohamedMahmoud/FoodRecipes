@@ -3,6 +3,7 @@ package com.example.mac_os.foodrecipe.data;
 import com.example.mac_os.foodrecipe.Model.Food;
 import com.example.mac_os.foodrecipe.Model.Food_;
 import com.example.mac_os.foodrecipe.Model.Foods;
+import com.example.mac_os.foodrecipe.Model.Recipe;
 import com.google.gson.JsonObject;
 
 import java.util.List;
@@ -38,4 +39,16 @@ public interface FatSecretApi {
                                      @Query("oauth_version") String oauth_version,
                                      @Query("page_number") String page_number,
                                      @Query("search_expression") String search_expression);
+    @GET("rest/server.api")
+    Call<Recipe> getRecipesBySearch(@Query("format") String format,
+                                    @Query("max_results") String max_results,
+                                    @Query("method") String method,
+                                    @Query("oauth_consumer_key") String oauth_consumer_key,
+                                    @Query("oauth_nonce") String oauth_nonce,
+                                    @Query(value="oauth_signature",encoded = true) String oauth_signature,
+                                    @Query("oauth_signature_method") String oauth_signature_method,
+                                    @Query("oauth_timestamp") String oauth_timestamp,
+                                    @Query("oauth_version") String oauth_version,
+                                    @Query("page_number") String page_number,
+                                    @Query("search_expression") String search_expression);
 }
