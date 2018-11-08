@@ -1,20 +1,21 @@
-//package com.example.mac_os.foodrecipe;
+package com.example.mac_os.foodrecipe;
 //
-//import android.os.AsyncTask;
-//import android.support.v7.app.AppCompatActivity;
-//import android.os.Bundle;
-//import android.util.Log;
-//import android.widget.Toast;
-//
-//import com.example.mac_os.foodrecipe.Model.Food_;
-//
-//import org.json.JSONArray;
-//import org.json.JSONException;
-//import org.json.JSONObject;
-//
-//import java.io.UnsupportedEncodingException;
-//import java.util.ArrayList;
-//import java.util.List;
+import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.GridView;
+import android.widget.Toast;
+
+import com.example.mac_os.foodrecipe.Model.Food_;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 //
 //public class MainActivity extends AppCompatActivity {
 //    FatSecretSearchFood mFatSecretSearch;
@@ -83,3 +84,15 @@
 //    }
 //
 //}
+
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.recipe_type_list);
+        GridView gridView = (GridView) findViewById(R.id.recipe_type_layout);
+        gridView.setAdapter(new MyAdapter(this));
+    }
+}
