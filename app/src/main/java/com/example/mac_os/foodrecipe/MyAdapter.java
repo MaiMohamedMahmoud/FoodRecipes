@@ -20,12 +20,12 @@ public class MyAdapter extends BaseAdapter {
     public MyAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
 
-        mItems.add(new Item("Red",       R.drawable.cyu));
-        mItems.add(new Item("Magenta",   R.drawable.image1));
-        mItems.add(new Item("Dark Gray", R.drawable.image2));
-        mItems.add(new Item("Gray",      R.drawable.circle_green));
-        mItems.add(new Item("Green",     R.drawable.images));
-        mItems.add(new Item("Cyan",      R.drawable.image3));
+        mItems.add(new Item("Red",       R.drawable.image1));
+        mItems.add(new Item("Magenta",   R.drawable.image2));
+        mItems.add(new Item("Dark Gray", R.drawable.image3));
+        mItems.add(new Item("Gray",      R.drawable.image4));
+        mItems.add(new Item("Green",     R.drawable.image5));
+        mItems.add(new Item("Cyan",      R.drawable.image6));
     }
 
     @Override
