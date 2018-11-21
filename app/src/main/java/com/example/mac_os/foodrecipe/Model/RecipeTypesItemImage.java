@@ -1,11 +1,11 @@
 package com.example.mac_os.foodrecipe.Model;
 
-public class Item {
+public class RecipeTypesItemImage {
 
     private String name;
     private int pic;
 
-    public Item(String name, int pic) {
+    public RecipeTypesItemImage(String name, int pic) {
         this.name = name;
         this.pic = pic;
     }

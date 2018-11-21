@@ -107,7 +107,7 @@ public class FatSecretSearchFood {
 //    }
 
     public String searchFood(String searchFood, int page) throws UnsupportedEncodingException {
-        MethodOfSearch ="foods.search";
+        MethodOfSearch = "foods.search";
         final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParams(page)));
         final String[] template = new String[1];
         params.add("method=foods.search");
@@ -126,7 +126,7 @@ public class FatSecretSearchFood {
     }
 
     public String searchRecipe(String searchRecipe, int page) throws UnsupportedEncodingException {
-        MethodOfSearch ="recipes.search";
+        MethodOfSearch = "recipes.search";
         final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParams(page)));
         final String[] template = new String[1];
         params.add("method=recipes.search");
@@ -143,6 +143,25 @@ public class FatSecretSearchFood {
         }
         return resuOfsignature;
     }
+
+    public String getRecipeType() throws UnsupportedEncodingException {
+        MethodOfSearch = "recipe_types.get";
+        final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParamsWithoutPageNum()));
+        final String[] template = new String[1];
+        params.add("method=" + MethodOfSearch);
+        params.add("oauth_signature=" + sign(APP_METHOD, APP_URL, params.toArray(template), ""));
+        String url = null;
+
+        url = paramify(params.toArray(template));
+
+        Log.i("URL", url.toString());
+        String[] par = params.toArray(template);
+        for (int i = 0; i < par.length; i++) {
+            Log.i("tag param", par[i] + "");
+        }
+        return resuOfsignature;
+    }
+
     /**
      * Returns the percent-encoded string for the given url
      *
@@ -166,6 +185,18 @@ public class FatSecretSearchFood {
         }
     }
 
+    private static String[] generateOauthParamsWithoutPageNum() {
+        timestampValue = Long.valueOf(System.currentTimeMillis() * 2).toString();
+        nonceValue = nonce();
+        return new String[]{
+                "oauth_consumer_key=" + APP_KEY,          // Your API key when you registered as a developer
+                "oauth_signature_method=HMAC-SHA1",   //The method used to generate the signature (only HMAC-SHA1 is supported)
+                "oauth_timestamp=" + timestampValue                    //The date and time, expressed in the number of seconds since January 1, 1970 00:00:00 GMT.
+                , // Should be  Long.valueOf(System.currentTimeMillis() / 1000).toString()
+                "oauth_nonce=" + nonceValue,               // A randomly generated string for a request that can be combined with the timestamp to produce a unique value
+                "oauth_version=1.0",                    // MUST be "1.0"
+                "format=json"};                   // The maximum number of results to return (default value is 20). This number cannot be greater than 50.
+    }
     private static String[] generateOauthParams(int i) {
         timestampValue = Long.valueOf(System.currentTimeMillis() * 2).toString();
         nonceValue = nonce();
@@ -215,7 +246,7 @@ public class FatSecretSearchFood {
 
 
     public String getmethod() {
-        return  MethodOfSearch;
+        return MethodOfSearch;
     }
 
     public String getsearch_expression(String searchFood) {

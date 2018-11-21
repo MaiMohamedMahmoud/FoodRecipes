@@ -1,21 +1,23 @@
 package com.example.mac_os.foodrecipe;
 //
-import android.os.AsyncTask;
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.GridView;
-import android.widget.Toast;
 
-import com.example.mac_os.foodrecipe.Model.Food_;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.mac_os.foodrecipe.Model.RecipeTypes;
+import com.example.mac_os.foodrecipe.Model.RecipeTypesDetails;
+import com.example.mac_os.foodrecipe.data.FatSecretApi;
+import com.example.mac_os.foodrecipe.data.Utility.ApiUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 //
 //public class MainActivity extends AppCompatActivity {
 //    FatSecretSearchFood mFatSecretSearch;
@@ -88,11 +90,65 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    FatSecretSearchFood mFatSecretSearch;
+    private FatSecretApi mSecretApi;
+
+    private List<String> recipesTypesList;
+    GridView gridView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_type_list);
-        GridView gridView = (GridView) findViewById(R.id.recipe_type_layout);
-        gridView.setAdapter(new MyAdapter(this));
+        recipesTypesList = new ArrayList<>();
+        mSecretApi = ApiUtils.getFoodService();
+        mFatSecretSearch = new FatSecretSearchFood();
+        getRecipeType();
+
+        gridView = (GridView) findViewById(R.id.recipe_type_layout);
+
+
     }
+
+    private void getRecipeType() {
+        try {
+            String oauth_signature = mFatSecretSearch.getRecipeType();
+            String oauth_consumer_key = mFatSecretSearch.getoauth_consumer_key();
+            String oauth_signature_method = mFatSecretSearch.getoauth_signature_method();
+            String oauth_timestamp = mFatSecretSearch.getoauth_timestamp();
+            String oauth_nonce = mFatSecretSearch.getoauth_nonce();
+            String oauth_version = mFatSecretSearch.getoauth_version();
+            String format = mFatSecretSearch.getformat();
+            String max_results = mFatSecretSearch.getmax_results();
+            String method = mFatSecretSearch.getmethod();
+            mSecretApi.getRecipeType(format, method, oauth_consumer_key
+                    , oauth_nonce, oauth_signature, oauth_signature_method,
+                    oauth_timestamp, oauth_version).enqueue(recipeTypeCallback);
+
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    Callback<RecipeTypes> recipeTypeCallback = new Callback<RecipeTypes>() {
+
+        @Override
+        public void onResponse(Call<RecipeTypes> call, Response<RecipeTypes> response) {
+            Log.i("body call", call.request() + "");
+            Log.i("body response types", response.body() + "");
+            RecipeTypes recipeTypesObj = response.body();
+            RecipeTypesDetails recipeTypesDetailsObj = recipeTypesObj.getRecipeTypes();
+            recipesTypesList.addAll(recipeTypesDetailsObj.getRecipeTypesDetails());
+            gridView.setAdapter(new RecipeTypeAdapter(getApplicationContext(), recipesTypesList));
+            Log.i("recipe types", recipesTypesList.size() + "");
+            Log.i("recipe types obj", recipesTypesList.get(0) + "");
+        }
+
+        @Override
+        public void onFailure(Call<RecipeTypes> call, Throwable t) {
+            Log.i("body fail", call.request() + "Fail");
+            t.printStackTrace();
+        }
+    };
 }

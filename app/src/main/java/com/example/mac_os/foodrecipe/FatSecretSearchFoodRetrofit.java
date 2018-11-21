@@ -18,6 +18,8 @@ import com.example.mac_os.foodrecipe.Model.Food;
 import com.example.mac_os.foodrecipe.Model.Food_;
 import com.example.mac_os.foodrecipe.Model.Foods;
 import com.example.mac_os.foodrecipe.Model.Recipe;
+import com.example.mac_os.foodrecipe.Model.RecipeTypes;
+import com.example.mac_os.foodrecipe.Model.RecipeTypesDetails;
 import com.example.mac_os.foodrecipe.Model.Recipe_;
 import com.example.mac_os.foodrecipe.Model.Recipes;
 import com.example.mac_os.foodrecipe.data.FatSecretApi;
@@ -48,9 +50,11 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
     //private List<Food_> foodDetailsList;
     private List<Food_> foodList;
     private List<Recipe_> recipesList;
+    private List<String> recipesTypesList;
     private FatSecretApi mSecretApi;
     RecyclerView.Adapter foodAdapter;
     RecyclerView.Adapter RecipeAdapter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +63,7 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         rvListFood.setLayoutManager(new LinearLayoutManager(this));
         foodList = new ArrayList<>();
         recipesList = new ArrayList<>();
+        recipesTypesList = new ArrayList<>();
         foodAdapter = new FatSecretSearchFoodRetrofit.FoodAdapter(foodList);
         RecipeAdapter = new FatSecretSearchFoodRetrofit.RecipeAdapter(recipesList);
 
@@ -68,6 +73,7 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         mFatSecretSearch = new FatSecretSearchFood();
         searchFood("soup", 1);
         searchRecipe("Chicken", 1);
+        getRecipeType();
         //mSecretApi.getFoodBySearch().enqueue(foodsCallback);
 
     }
@@ -179,6 +185,49 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         }
 
     }
+
+    private void getRecipeType() {
+        try {
+            String oauth_signature = mFatSecretSearch.getRecipeType();
+            String oauth_consumer_key = mFatSecretSearch.getoauth_consumer_key();
+            String oauth_signature_method = mFatSecretSearch.getoauth_signature_method();
+            String oauth_timestamp = mFatSecretSearch.getoauth_timestamp();
+            String oauth_nonce = mFatSecretSearch.getoauth_nonce();
+            String oauth_version = mFatSecretSearch.getoauth_version();
+            String format = mFatSecretSearch.getformat();
+            String max_results = mFatSecretSearch.getmax_results();
+            String method = mFatSecretSearch.getmethod();
+            mSecretApi.getRecipeType(format, method, oauth_consumer_key
+                    , oauth_nonce, oauth_signature, oauth_signature_method,
+                    oauth_timestamp, oauth_version).enqueue(recipeTypeCallback);
+
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    Callback<RecipeTypes> recipeTypeCallback = new Callback<RecipeTypes>() {
+
+        @Override
+        public void onResponse(Call<RecipeTypes> call, Response<RecipeTypes> response) {
+            Log.i("body call", call.request() + "");
+            Log.i("body response types", response.body() + "");
+            RecipeTypes recipeTypesObj = response.body();
+            RecipeTypesDetails recipeTypesDetailsObj=  recipeTypesObj.getRecipeTypes();
+            recipesTypesList.addAll(recipeTypesDetailsObj.getRecipeTypesDetails());
+
+            Log.i("recipe types",  recipesTypesList.size()+ "");
+            Log.i("recipe types obj", recipesTypesList.get(0) + "");
+        }
+
+        @Override
+        public void onFailure(Call<RecipeTypes> call, Throwable t) {
+            Log.i("body fail", call.request() + "Fail");
+            t.printStackTrace();
+        }
+    };
+
 
     Callback<Recipe> recipeCallback = new Callback<Recipe>() {
         @Override

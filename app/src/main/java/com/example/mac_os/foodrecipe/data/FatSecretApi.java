@@ -4,6 +4,7 @@ import com.example.mac_os.foodrecipe.Model.Food;
 import com.example.mac_os.foodrecipe.Model.Food_;
 import com.example.mac_os.foodrecipe.Model.Foods;
 import com.example.mac_os.foodrecipe.Model.Recipe;
+import com.example.mac_os.foodrecipe.Model.RecipeTypes;
 import com.google.gson.JsonObject;
 
 import java.util.List;
@@ -27,30 +28,41 @@ public interface FatSecretApi {
     // oauth_version=1.0&page_number=1
     // &search_expression=soup
 
-        @GET("rest/server.api")
+    @GET("rest/server.api")
     Call<Food> getFoodBySearch(@Query("format") String format,
-                                     @Query("max_results") String max_results,
-                                     @Query("method") String method,
-                                     @Query("oauth_consumer_key") String oauth_consumer_key,
-                                     @Query("oauth_nonce") String oauth_nonce,
-                                     @Query(value="oauth_signature",encoded = true) String oauth_signature,
-                                     @Query("oauth_signature_method") String oauth_signature_method,
-                                     @Query("oauth_timestamp") String oauth_timestamp,
-                                     @Query("oauth_version") String oauth_version,
-                                     @Query("page_number") String page_number,
-                                     @Query("search_expression") String search_expression);
+                               @Query("max_results") String max_results,
+                               @Query("method") String method,
+                               @Query("oauth_consumer_key") String oauth_consumer_key,
+                               @Query("oauth_nonce") String oauth_nonce,
+                               @Query(value = "oauth_signature", encoded = true) String oauth_signature,
+                               @Query("oauth_signature_method") String oauth_signature_method,
+                               @Query("oauth_timestamp") String oauth_timestamp,
+                               @Query("oauth_version") String oauth_version,
+                               @Query("page_number") String page_number,
+                               @Query("search_expression") String search_expression);
+
     @GET("rest/server.api")
     Call<Recipe> getRecipesBySearch(@Query("format") String format,
                                     @Query("max_results") String max_results,
                                     @Query("method") String method,
                                     @Query("oauth_consumer_key") String oauth_consumer_key,
                                     @Query("oauth_nonce") String oauth_nonce,
-                                    @Query(value="oauth_signature",encoded = true) String oauth_signature,
+                                    @Query(value = "oauth_signature", encoded = true) String oauth_signature,
                                     @Query("oauth_signature_method") String oauth_signature_method,
                                     @Query("oauth_timestamp") String oauth_timestamp,
                                     @Query("oauth_version") String oauth_version,
                                     @Query("page_number") String page_number,
                                     @Query("search_expression") String search_expression);
+
+    @GET("rest/server.api")
+    Call<RecipeTypes> getRecipeType(@Query("format") String format,
+                                    @Query("method") String method,
+                                    @Query("oauth_consumer_key") String oauth_consumer_key,
+                                    @Query("oauth_nonce") String oauth_nonce,
+                                    @Query(value = "oauth_signature", encoded = true) String oauth_signature,
+                                    @Query("oauth_signature_method") String oauth_signature_method,
+                                    @Query("oauth_timestamp") String oauth_timestamp,
+                                    @Query("oauth_version") String oauth_version);
 
 
 }

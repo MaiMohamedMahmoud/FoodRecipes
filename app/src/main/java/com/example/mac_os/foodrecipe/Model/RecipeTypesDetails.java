@@ -7,7 +7,7 @@ import java.util.List;
 
 public class RecipeTypesDetails {
 
-    @SerializedName("recipe_types")
+    @SerializedName("recipe_type")
     @Expose
     private List<String> recipeTypes = null;
 
