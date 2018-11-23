@@ -27,48 +27,8 @@ public class SquareImageView extends android.support.v7.widget.AppCompatImageVie
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth()); //Snap to width
-        setOnTouchListener(listener_onTouch);
+
     }
-
-
-
-    OnTouchListener listener_onTouch = new OnTouchListener() {
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            ImageView image = (ImageView) v;
-
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    image.getDrawable().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                    image.invalidate();
-
-                    break;
-
-                case MotionEvent.ACTION_MOVE:
-                    image.getDrawable().setColorFilter(0x77000000, PorterDuff.Mode.SRC_ATOP);
-                    image.invalidate();
-
-
-                    break;
-
-                case MotionEvent.ACTION_UP:
-                    image.getDrawable().clearColorFilter();
-                    image.invalidate();
-
-
-                    break;
-
-                default:
-                    image.getDrawable().clearColorFilter();
-                    image.invalidate();
-
-                    break;
-            }
-
-            return true;
-        }
-    };
 
 }
 

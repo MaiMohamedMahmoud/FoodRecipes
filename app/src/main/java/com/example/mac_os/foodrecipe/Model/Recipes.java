@@ -1,7 +1,10 @@
 
 package com.example.mac_os.foodrecipe.Model;
 
+import java.io.Serializable;
 import java.util.List;
+
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -15,7 +18,7 @@ public class Recipes {
     private String pageNumber;
     @SerializedName("recipe")
     @Expose
-    private List<Recipe_> recipe = null;
+    private JsonElement recipe = null;
     @SerializedName("total_results")
     @Expose
     private String totalResults;
@@ -36,11 +39,11 @@ public class Recipes {
         this.pageNumber = pageNumber;
     }
 
-    public List<Recipe_> getRecipe() {
+    public JsonElement getRecipe() {
         return recipe;
     }
 
-    public void setRecipe(List<Recipe_> recipe) {
+    public void setRecipe(JsonElement recipe) {
         this.recipe = recipe;
     }
 

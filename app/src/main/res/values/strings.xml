@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">FoodRecipe</string>
+    <string name="no_recipes">There is no recipes yet.</string>
 </resources>

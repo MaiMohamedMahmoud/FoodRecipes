@@ -5,13 +5,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mac_os.foodrecipe.Model.RecipeTypesItemImage;
 import com.squareup.picasso.Picasso;
@@ -24,6 +27,7 @@ public class RecipeTypeAdapter extends BaseAdapter {
     private final List<String> mRecipeTypesDetails;
     private final LayoutInflater mInflater;
     Context mContext;
+    RecipeTypesItemImage recipeTypesItemImage;
 
     public RecipeTypeAdapter(Context context, List<String> recipeTypesDetails) {
         mInflater = LayoutInflater.from(context);
@@ -72,19 +76,20 @@ public class RecipeTypeAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = view;
-        ImageView picture;
+        SquareImageView picture;
         TextView name;
-
         if (v == null) {
             v = mInflater.inflate(R.layout.recipe_grid_item, viewGroup, false);
             v.setTag(R.id.picture, v.findViewById(R.id.picture));
             v.setTag(R.id.text, v.findViewById(R.id.text));
+            v.setTag(R.id.recipe_type_card_view,v.findViewById(R.id.recipe_type_card_view));
         }
 
-        picture = (ImageView) v.getTag(R.id.picture);
+        picture = (SquareImageView) v.getTag(R.id.picture);
         name = (TextView) v.getTag(R.id.text);
 
-        RecipeTypesItemImage recipeTypesItemImage = getItem(i);
+        recipeTypesItemImage = getItem(i);
+
         Picasso.with(mContext)
                 .load(recipeTypesItemImage.getPic())
                 .fit()
@@ -92,6 +97,13 @@ public class RecipeTypeAdapter extends BaseAdapter {
                 .into(picture);
         name.setText(recipeTypesItemImage.getName());
 
+//        v.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                Toast.makeText(mContext,position+" pos",Toast.LENGTH_LONG).show();
+//            }
+//        });
         return v;
     }
 

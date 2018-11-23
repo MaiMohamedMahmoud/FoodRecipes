@@ -1,13 +1,20 @@
 package com.example.mac_os.foodrecipe;
 //
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mac_os.foodrecipe.Model.RecipeTypes;
 import com.example.mac_os.foodrecipe.Model.RecipeTypesDetails;
+import com.example.mac_os.foodrecipe.Model.RecipeTypesItemImage;
 import com.example.mac_os.foodrecipe.data.FatSecretApi;
 import com.example.mac_os.foodrecipe.data.Utility.ApiUtils;
 
@@ -95,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
     private List<String> recipesTypesList;
     GridView gridView;
+    String SearchItemKeyWord;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -106,7 +114,17 @@ public class MainActivity extends AppCompatActivity {
         getRecipeType();
 
         gridView = (GridView) findViewById(R.id.recipe_type_layout);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent fatsecretIntent = new Intent(MainActivity.this, FatSecretSearchFoodRetrofit.class);
+                    fatsecretIntent.putExtra("SearchItemKeyWord",recipesTypesList.get(position));
+                    startActivity(fatsecretIntent);
 
+
+//                Toast.makeText(getApplicationContext(),"aaaa"+recipesTypesList.get(position),Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
@@ -135,14 +153,14 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onResponse(Call<RecipeTypes> call, Response<RecipeTypes> response) {
-            Log.i("body call", call.request() + "");
-            Log.i("body response types", response.body() + "");
+
             RecipeTypes recipeTypesObj = response.body();
             RecipeTypesDetails recipeTypesDetailsObj = recipeTypesObj.getRecipeTypes();
             recipesTypesList.addAll(recipeTypesDetailsObj.getRecipeTypesDetails());
             gridView.setAdapter(new RecipeTypeAdapter(getApplicationContext(), recipesTypesList));
-            Log.i("recipe types", recipesTypesList.size() + "");
-            Log.i("recipe types obj", recipesTypesList.get(0) + "");
+
+
+
         }
 
         @Override

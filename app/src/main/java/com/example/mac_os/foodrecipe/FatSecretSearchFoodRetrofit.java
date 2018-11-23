@@ -1,5 +1,6 @@
 package com.example.mac_os.foodrecipe;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,6 +25,8 @@ import com.example.mac_os.foodrecipe.Model.Recipe_;
 import com.example.mac_os.foodrecipe.Model.Recipes;
 import com.example.mac_os.foodrecipe.data.FatSecretApi;
 import com.example.mac_os.foodrecipe.data.Utility.ApiUtils;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
@@ -54,6 +57,8 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
     private FatSecretApi mSecretApi;
     RecyclerView.Adapter foodAdapter;
     RecyclerView.Adapter RecipeAdapter;
+    String SearchItemKeyWord;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,15 +71,15 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         recipesTypesList = new ArrayList<>();
         foodAdapter = new FatSecretSearchFoodRetrofit.FoodAdapter(foodList);
         RecipeAdapter = new FatSecretSearchFoodRetrofit.RecipeAdapter(recipesList);
-
+        Bundle extras = getIntent().getExtras();
+        String searchItem = extras.getString("SearchItemKeyWord");
+        Toast.makeText(getApplicationContext(), searchItem, Toast.LENGTH_LONG).show();
         rvListFood.setAdapter(foodAdapter);
         rvListFood.setAdapter(RecipeAdapter);
         mSecretApi = ApiUtils.getFoodService();
         mFatSecretSearch = new FatSecretSearchFood();
-        searchFood("soup", 1);
-        searchRecipe("Chicken", 1);
-        getRecipeType();
-        //mSecretApi.getFoodBySearch().enqueue(foodsCallback);
+        //searchFood("soup", 1);
+        searchRecipe(searchItem, 1);
 
     }
 
@@ -214,10 +219,10 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
             Log.i("body call", call.request() + "");
             Log.i("body response types", response.body() + "");
             RecipeTypes recipeTypesObj = response.body();
-            RecipeTypesDetails recipeTypesDetailsObj=  recipeTypesObj.getRecipeTypes();
+            RecipeTypesDetails recipeTypesDetailsObj = recipeTypesObj.getRecipeTypes();
             recipesTypesList.addAll(recipeTypesDetailsObj.getRecipeTypesDetails());
 
-            Log.i("recipe types",  recipesTypesList.size()+ "");
+            Log.i("recipe types", recipesTypesList.size() + "");
             Log.i("recipe types obj", recipesTypesList.get(0) + "");
         }
 
@@ -232,19 +237,73 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
     Callback<Recipe> recipeCallback = new Callback<Recipe>() {
         @Override
         public void onResponse(Call<Recipe> call, Response<Recipe> response) {
+
             Log.i("body call", call.request() + "");
             Log.i("body response recipe", response.body() + "");
+            Toast.makeText(getApplicationContext(), "gowa el fun", Toast.LENGTH_LONG).show();
             Recipe recipeObj = response.body();
-            Recipes recipesDetailsObj = recipeObj.getRecipes();
-            recipesList.addAll(recipesDetailsObj.getRecipe());
-            Log.i("body obj", recipesList.get(0).getRecipeName() + "");
+            if (response != null) {
+                Recipes recipesDetailsObj = recipeObj.getRecipes();
+                Toast.makeText(getApplicationContext(), "gowa el if el 2ola", Toast.LENGTH_LONG).show();
+                if (recipesDetailsObj != null) {
+                    JsonElement jsonElementRecipes = recipesDetailsObj.getRecipe();
+                    Toast.makeText(getApplicationContext(), "gowa el if el tanya", Toast.LENGTH_LONG).show();
 
-            RecipeAdapter.notifyDataSetChanged();
+                    if (jsonElementRecipes != null) {
+
+                        if (jsonElementRecipes.isJsonObject()) {
+                            JsonObject ss = jsonElementRecipes.getAsJsonObject();
+                            Recipe_ obj_recipe = new Recipe_();
+
+                            obj_recipe.setRecipeDescription(ss.get("recipe_description").toString());
+                            obj_recipe.setRecipeId(ss.get("recipe_id").toString());
+                            obj_recipe.setRecipeImage(ss.get("recipe_image").toString());
+                            obj_recipe.setRecipeName(ss.get("recipe_name").toString());
+                            obj_recipe.setRecipeUrl(ss.get("recipe_url").toString());
+                            recipesList.add(obj_recipe);
+                        } else if (jsonElementRecipes.isJsonArray()) {
+                            JsonArray jss = jsonElementRecipes.getAsJsonArray();
+
+                            List<Recipe_> recipe_s_obj = new ArrayList<>();
+                            for (int i = 0; i < jss.size(); i++) {
+                                JsonObject ss = (JsonObject) jss.get(i);
+                                 Toast.makeText(getApplicationContext(), "gowa"+ss.get("recipe_description").toString() , Toast.LENGTH_LONG).show();
+
+                                Recipe_ obj_recipe = new Recipe_();
+
+                                obj_recipe.setRecipeDescription(ss.get("recipe_description").toString());
+                                obj_recipe.setRecipeId(ss.get("recipe_id").toString());
+                                // obj_recipe.setRecipeImage(ss.get("recipe_image").toString());
+                                obj_recipe.setRecipeName(ss.get("recipe_name").toString());
+                                obj_recipe.setRecipeUrl(ss.get("recipe_url").toString());
+                                recipesList.add(obj_recipe);
+                            }
+                        }
+                        // recipesList.addAll(recipesDetailsObj.getRecipe());
+                        RecipeAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.no_recipes, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+                }
+                //  Log.i("body obj", recipesList.get(0).getRecipeName() + "");
+                else {
+                    Toast.makeText(getApplicationContext(), R.string.no_recipes, Toast.LENGTH_LONG).show();
+                    finish();
+                }
+
+            } else {
+                Toast.makeText(getApplicationContext(), "gowa el else", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), R.string.no_recipes, Toast.LENGTH_LONG).show();
+                finish();
+
+            }
         }
 
         @Override
         public void onFailure(Call<Recipe> call, Throwable t) {
             Log.i("body fail", call.request() + "Fail");
+            Toast.makeText(getApplicationContext(), "gowa el fail" + call.request(), Toast.LENGTH_LONG).show();
             t.printStackTrace();
         }
     };
