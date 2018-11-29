@@ -52,7 +52,7 @@ public interface FatSecretApi {
                                     @Query("oauth_timestamp") String oauth_timestamp,
                                     @Query("oauth_version") String oauth_version,
                                     @Query("page_number") String page_number,
-                                    @Query(value = "search_expression", encoded = true) String search_expression);
+                                    @Query(value = "recipe_type", encoded = true) String search_expression);
 
     @GET("rest/server.api")
     Call<RecipeTypes> getRecipeType(@Query("format") String format,

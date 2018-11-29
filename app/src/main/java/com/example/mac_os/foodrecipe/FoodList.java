@@ -36,8 +36,8 @@
 //    @Override
 //    protected void onCreate(@Nullable Bundle savedInstanceState) {
 //        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.food_list);
-//        rvListFood = (RecyclerView) findViewById(R.id.food_list);
+//        setContentView(R.layout.recipe_list);
+//        rvListFood = (RecyclerView) findViewById(R.id.recipe_list);
 //        rvListFood.setLayoutManager(new LinearLayoutManager(this));
 //        foodList = new ArrayList<>();
 //        foodAdapter = new FoodAdapter(foodList);
@@ -103,13 +103,13 @@
 //        }.execute();
 //    }
 //
-//    private class FoodHolder extends RecyclerView.ViewHolder {
+//    private class RecipeHolder extends RecyclerView.ViewHolder {
 //
 //        TextView foodDescription;
 //        TextView foodName;
 //        TextView foodType;
 //
-//        public FoodHolder(View itemView) {
+//        public RecipeHolder(View itemView) {
 //            super(itemView);
 //            getItemView(itemView);
 //        }
@@ -122,7 +122,7 @@
 //        }
 //    }
 //
-//    private class FoodAdapter extends RecyclerView.Adapter<FoodHolder> {
+//    private class FoodAdapter extends RecyclerView.Adapter<RecipeHolder> {
 //
 //        private List<Food_> mFoodList;
 //
@@ -133,14 +133,14 @@
 //
 //        @NonNull
 //        @Override
-//        public FoodHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//        public RecipeHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 //            LayoutInflater layoutInflater = getLayoutInflater();
-//            View v = layoutInflater.inflate(R.layout.food_list_item, parent, false);
-//            return new FoodHolder(v);
+//            View v = layoutInflater.inflate(R.layout.recipe_list_item, parent, false);
+//            return new RecipeHolder(v);
 //        }
 //
 //        @Override
-//        public void onBindViewHolder(@NonNull FoodHolder holder, int position) {
+//        public void onBindViewHolder(@NonNull RecipeHolder holder, int position) {
 //            Log.i("Desc", mFoodList.get(position).getFoodDescription());
 //            holder.foodDescription.setText(mFoodList.get(position).getFoodDescription());
 //            holder.foodName.setText(mFoodList.get(position).getFoodName());

@@ -117,9 +117,9 @@ public class MainActivity extends AppCompatActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent fatsecretIntent = new Intent(MainActivity.this, FatSecretSearchFoodRetrofit.class);
-                    fatsecretIntent.putExtra("SearchItemKeyWord",recipesTypesList.get(position));
-                    startActivity(fatsecretIntent);
+                Intent fatsecretIntent = new Intent(MainActivity.this, FatSecretSearchFoodRetrofit.class);
+                fatsecretIntent.putExtra("SearchItemKeyWord", recipesTypesList.get(position));
+                startActivity(fatsecretIntent);
 
 
 //                Toast.makeText(getApplicationContext(),"aaaa"+recipesTypesList.get(position),Toast.LENGTH_LONG).show();
@@ -153,13 +153,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onResponse(Call<RecipeTypes> call, Response<RecipeTypes> response) {
-
             RecipeTypes recipeTypesObj = response.body();
             RecipeTypesDetails recipeTypesDetailsObj = recipeTypesObj.getRecipeTypes();
             recipesTypesList.addAll(recipeTypesDetailsObj.getRecipeTypesDetails());
             gridView.setAdapter(new RecipeTypeAdapter(getApplicationContext(), recipesTypesList));
-
-
 
         }
 

@@ -43,6 +43,7 @@ public class FatSecretSearchFood {
     private static String MethodOfSearch = "";
     private String resuOfsignature = "";
     private static String timestampValue = "";
+    private static String recipeId = "";
     private static String nonceValue = "";
     JSONObject food;
 
@@ -130,8 +131,28 @@ public class FatSecretSearchFood {
         final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParams(page)));
         final String[] template = new String[1];
         params.add("method=recipes.search");
-        params.add("search_expression=" + Uri.encode(searchRecipe));
+        params.add("recipe_type=" + Uri.encode(searchRecipe));
         params.add("oauth_signature=" + sign(APP_METHOD, APP_URL, params.toArray(template), searchRecipe));
+        String url = null;
+
+        url = paramify(params.toArray(template));
+
+        Log.i("URL", url.toString());
+        String[] par = params.toArray(template);
+        for (int i = 0; i < par.length; i++) {
+            Log.i("tag param", par[i] + "");
+        }
+        return resuOfsignature;
+    }
+
+    public String searchRecipeById(Long recipe_Id, int page) throws UnsupportedEncodingException {
+        MethodOfSearch = "recipe.get";
+
+        final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParamsWithoutPageNum()));
+        final String[] template = new String[1];
+        params.add("method=recipe.get");
+        params.add("recipe_id=" + recipe_Id);
+        params.add("oauth_signature=" + sign(APP_METHOD, APP_URL, params.toArray(template), ""));
         String url = null;
 
         url = paramify(params.toArray(template));
@@ -197,6 +218,7 @@ public class FatSecretSearchFood {
                 "oauth_version=1.0",                    // MUST be "1.0"
                 "format=json"};                   // The maximum number of results to return (default value is 20). This number cannot be greater than 50.
     }
+
     private static String[] generateOauthParams(int i) {
         timestampValue = Long.valueOf(System.currentTimeMillis() * 2).toString();
         nonceValue = nonce();
@@ -244,12 +266,14 @@ public class FatSecretSearchFood {
         return "20";
     }
 
-
     public String getmethod() {
         return MethodOfSearch;
     }
 
     public String getsearch_expression(String searchFood) {
+        return Uri.encode(searchFood);
+    }
+    public String getrecipe_type(String searchFood) {
         return Uri.encode(searchFood);
     }
 

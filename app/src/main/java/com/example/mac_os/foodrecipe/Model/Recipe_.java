@@ -11,7 +11,7 @@ public class Recipe_ {
     private String recipeDescription;
     @SerializedName("recipe_id")
     @Expose
-    private String recipeId;
+    private Long recipeId;
     @SerializedName("recipe_image")
     @Expose
     private String recipeImage;
@@ -30,11 +30,11 @@ public class Recipe_ {
         this.recipeDescription = recipeDescription;
     }
 
-    public String getRecipeId() {
+    public long getRecipeId() {
         return recipeId;
     }
 
-    public void setRecipeId(String recipeId) {
+    public void setRecipeId(long recipeId) {
         this.recipeId = recipeId;
     }
 
