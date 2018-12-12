@@ -5,6 +5,7 @@ import com.example.mac_os.foodrecipe.Model.Food_;
 import com.example.mac_os.foodrecipe.Model.Foods;
 import com.example.mac_os.foodrecipe.Model.Recipe;
 import com.example.mac_os.foodrecipe.Model.RecipeTypes;
+import com.example.mac_os.foodrecipe.Model.RecipeDetail;
 import com.google.gson.JsonObject;
 
 import java.util.List;
@@ -64,5 +65,16 @@ public interface FatSecretApi {
                                     @Query("oauth_timestamp") String oauth_timestamp,
                                     @Query("oauth_version") String oauth_version);
 
+
+    @GET("rest/server.api")
+    Call<RecipeDetail> getRecipeDetailsById(@Query("format") String format,
+                                             @Query("method") String method,
+                                             @Query("oauth_consumer_key") String oauth_consumer_key,
+                                             @Query("oauth_nonce") String oauth_nonce,
+                                             @Query(value = "oauth_signature", encoded = true) String oauth_signature,
+                                             @Query("oauth_signature_method") String oauth_signature_method,
+                                             @Query("oauth_timestamp") String oauth_timestamp,
+                                             @Query("oauth_version") String oauth_version,
+                                             @Query(value = "recipe_id", encoded = true) Long recipe_id);
 
 }

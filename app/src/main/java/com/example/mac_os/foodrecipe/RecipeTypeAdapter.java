@@ -50,12 +50,6 @@ public class RecipeTypeAdapter extends BaseAdapter {
             mRecipeTypesItemImages.add(new RecipeTypesItemImage(mRecipeTypesDetails.get(i), resource_Of_Image));
         }
 
-//        mRecipeTypesItemImages.add(new RecipeTypesItemImage("Magenta", R.drawable.image2));
-//        mRecipeTypesItemImages.add(new RecipeTypesItemImage("Dark Gray", R.drawable.image3));
-//        mRecipeTypesItemImages.add(new RecipeTypesItemImage("Gray", R.drawable.image4));
-//        mRecipeTypesItemImages.add(new RecipeTypesItemImage("Green", R.drawable.image5));
-//        mRecipeTypesItemImages.add(new RecipeTypesItemImage("Cyan", R.drawable.image6));
-
     }
 
     @Override

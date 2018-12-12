@@ -147,7 +147,7 @@ public class FatSecretSearchFood {
 
     public String searchRecipeById(Long recipe_Id, int page) throws UnsupportedEncodingException {
         MethodOfSearch = "recipe.get";
-
+        Log.i("dddd", recipe_Id + "");
         final List<String> params = new ArrayList<>(Arrays.asList(generateOauthParamsWithoutPageNum()));
         final String[] template = new String[1];
         params.add("method=recipe.get");

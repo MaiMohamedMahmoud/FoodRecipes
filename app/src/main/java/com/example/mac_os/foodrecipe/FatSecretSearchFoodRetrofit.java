@@ -137,27 +137,6 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
 
     }
 
-    private void searchRecipeById(final Long recipe_id, final int page_num) {
-
-        try {
-            //String url = mFatSecretSearch.searchFood(item, page_num);
-            String oauth_signature = mFatSecretSearch.searchRecipeById(recipe_id, page_num);
-            String oauth_consumer_key = mFatSecretSearch.getoauth_consumer_key();
-            String oauth_signature_method = mFatSecretSearch.getoauth_signature_method();
-            String oauth_timestamp = mFatSecretSearch.getoauth_timestamp();
-            String oauth_nonce = mFatSecretSearch.getoauth_nonce();
-            String oauth_version = mFatSecretSearch.getoauth_version();
-            String format = mFatSecretSearch.getformat();
-            String method = mFatSecretSearch.getmethod();
-
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
     Callback<Recipe> recipeCallback = new Callback<Recipe>() {
         @Override
         public void onResponse(Call<Recipe> call, Response<Recipe> response) {
@@ -355,6 +334,7 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(FatSecretSearchFoodRetrofit.this, RecipeDetails.class);
+                    intent.putExtra("recipeId",mRecipeList.get(position).getRecipeId());
                     startActivity(intent);
                    // searchRecipeById(mRecipeList.get(position).getRecipeId(), 1);
                 }
