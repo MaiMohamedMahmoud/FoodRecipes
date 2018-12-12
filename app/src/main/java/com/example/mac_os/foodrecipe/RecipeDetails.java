@@ -19,12 +19,15 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mac_os.foodrecipe.Model.Direction;
 import com.example.mac_os.foodrecipe.Model.Ingredient;
 import com.example.mac_os.foodrecipe.Model.RecipeDetail;
 import com.example.mac_os.foodrecipe.Model.Recipe_;
 import com.example.mac_os.foodrecipe.data.FatSecretApi;
 import com.example.mac_os.foodrecipe.data.Utility.ApiUtils;
 import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -43,8 +46,11 @@ public class RecipeDetails extends AppCompatActivity {
     CollapsingToolbarLayout toolbarLayout;
     SquareImageView imagetoolbar;
     RecyclerView rvIngredient;
+    RecyclerView rvDirections;
     RecyclerView.Adapter rvIngredientAdapter;
+    RecyclerView.Adapter rvDirectionsAdapter;
     List<Ingredient> listOfIngredient;
+    List<Direction> listOfDirections;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +65,16 @@ public class RecipeDetails extends AppCompatActivity {
         description = (TextView) findViewById(R.id.description);
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
         imagetoolbar = (SquareImageView) findViewById(R.id.imagetoolbar);
+        listOfDirections = new ArrayList<>();
         rvIngredientAdapter = new RecipeDetails.RecipeDetailsAdapter(listOfIngredient);
+        rvDirectionsAdapter = new RecipeDetails.RecipeDetailsDirectionAdapter(listOfDirections);
         rvIngredient = (RecyclerView) findViewById(R.id.recycle_view_ingredient);
         rvIngredient.setLayoutManager(new LinearLayoutManager(this));
         rvIngredient.setAdapter(rvIngredientAdapter);
+
+        rvDirections = (RecyclerView) findViewById(R.id.recycle_view_direction);
+        rvDirections.setLayoutManager(new LinearLayoutManager(this));
+        rvDirections.setAdapter(rvDirectionsAdapter);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -76,6 +88,57 @@ public class RecipeDetails extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), recipeId + "", Toast.LENGTH_LONG).show();
         searchRecipeById(recipeId, 1);
 
+    }
+
+
+    private class RecipeDetailsDirectionHolder extends RecyclerView.ViewHolder {
+
+        TextView directionNumber;
+        TextView directionDescription;
+
+        public RecipeDetailsDirectionHolder(View itemView) {
+            super(itemView);
+            getItemView(itemView);
+        }
+
+        public View getItemView(View itemView) {
+            directionNumber = (TextView) itemView.findViewById(R.id.direction_number);
+            directionDescription = (TextView) itemView.findViewById(R.id.direction_description);
+            return itemView;
+        }
+
+    }
+
+    private class RecipeDetailsDirectionAdapter extends RecyclerView.Adapter<RecipeDetailsDirectionHolder> {
+
+
+        List<Direction> mDirectionList;
+
+        RecipeDetailsDirectionAdapter(List<Direction> directionList) {
+
+            mDirectionList = directionList;
+        }
+
+        @NonNull
+        @Override
+        public RecipeDetailsDirectionHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            LayoutInflater inflater = getLayoutInflater();
+            View v = inflater.inflate(R.layout.direction_list_item, parent, false);
+            return new RecipeDetailsDirectionHolder(v);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecipeDetailsDirectionHolder holder, int position) {
+
+            holder.directionNumber.setText(mDirectionList.get(position).getDirectionNumber() + ". ");
+            holder.directionDescription.setText(mDirectionList.get(position).getDirectionDescription());
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return mDirectionList.size();
+        }
     }
 
     private class RecipeDetailsHolder extends RecyclerView.ViewHolder {
@@ -151,6 +214,9 @@ public class RecipeDetails extends AppCompatActivity {
             description.setText(recipe_obj.getRecipeDescription());
             listOfIngredient.addAll(recipe_obj.getIngredients().getIngredient());
             rvIngredientAdapter.notifyDataSetChanged();
+
+            listOfDirections.addAll(recipe_obj.getDirections().getDirection());
+            rvDirectionsAdapter.notifyDataSetChanged();
 //            Picasso.with(
 //                    getApplicationContext())
 //                    .load(recipe_obj.getRecipeImages().getRecipeImage())
