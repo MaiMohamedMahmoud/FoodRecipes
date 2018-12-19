@@ -51,6 +51,10 @@ public class RecipeDetails extends AppCompatActivity {
     RecyclerView.Adapter rvDirectionsAdapter;
     List<Ingredient> listOfIngredient;
     List<Direction> listOfDirections;
+    TextView txt_cooking_time;
+    TextView txt_preparation_time;
+    TextView txt_servings_number;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,9 @@ public class RecipeDetails extends AppCompatActivity {
         mSecretApi = ApiUtils.getFoodService();
         mFatSecretSearch = new FatSecretSearchFood();
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        txt_preparation_time = (TextView) findViewById(R.id.preparation_time_txt);
+        txt_servings_number = (TextView) findViewById(R.id.number_of_servings_txt);
+        txt_cooking_time = (TextView) findViewById(R.id.cooking_time_txt);
         listOfIngredient = new ArrayList<>();
         description = (TextView) findViewById(R.id.description);
         toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
@@ -77,15 +84,15 @@ public class RecipeDetails extends AppCompatActivity {
         rvDirections.setAdapter(rvDirectionsAdapter);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        Toast.makeText(getApplicationContext(), recipeId + "", Toast.LENGTH_LONG).show();
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
+//        Toast.makeText(getApplicationContext(), recipeId + "", Toast.LENGTH_LONG).show();
         searchRecipeById(recipeId, 1);
 
     }
@@ -217,6 +224,10 @@ public class RecipeDetails extends AppCompatActivity {
 
             listOfDirections.addAll(recipe_obj.getDirections().getDirection());
             rvDirectionsAdapter.notifyDataSetChanged();
+
+            txt_cooking_time.setText(recipe_obj.getCookingTimeMin() + " m");
+            txt_preparation_time.setText(recipe_obj.getPreparationTimeMin() + " m");
+            txt_servings_number.setText(recipe_obj.getNumberOfServings());
 //            Picasso.with(
 //                    getApplicationContext())
 //                    .load(recipe_obj.getRecipeImages().getRecipeImage())
