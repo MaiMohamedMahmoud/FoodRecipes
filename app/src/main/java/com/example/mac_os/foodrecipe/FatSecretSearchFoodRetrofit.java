@@ -22,6 +22,7 @@ import android.widget.ToggleButton;
 import com.example.mac_os.foodrecipe.Model.Food;
 import com.example.mac_os.foodrecipe.Model.Food_;
 import com.example.mac_os.foodrecipe.Model.Foods;
+import com.example.mac_os.foodrecipe.Model.PicassoCircleTransformation;
 import com.example.mac_os.foodrecipe.Model.Recipe;
 import com.example.mac_os.foodrecipe.Model.Recipe_;
 import com.example.mac_os.foodrecipe.Model.Recipes;
@@ -312,7 +313,7 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         public void onBindViewHolder(@NonNull RecipeHolder holder, final int position) {
             Log.i("Image", mRecipeList.get(position).getRecipeImage());
             holder.recipeDescription.setText(mRecipeList.get(position).getRecipeDescription());
-            holder.recipeName.setText(mRecipeList.get(position).getRecipeName());
+            holder.recipeName.setText(mRecipeList.get(position).getRecipeName() + " ");
             scaleAnimation = new ScaleAnimation(0.7f, 1.0f, 0.7f, 1.0f, Animation.RELATIVE_TO_SELF, 0.7f, Animation.RELATIVE_TO_SELF, 0.7f);
             scaleAnimation.setDuration(500);
             bounceInterpolator = new BounceInterpolator();
@@ -329,6 +330,7 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
                     .load(mRecipeList.get(position).getRecipeImage())
                     .fit()
                     .centerCrop()
+                    .transform(new PicassoCircleTransformation())
                     .into(holder.square_image_recipe_item);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
