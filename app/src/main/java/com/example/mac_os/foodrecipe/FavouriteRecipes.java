@@ -13,8 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -50,7 +52,17 @@ public class FavouriteRecipes extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate();
+        getMenuInflater().inflate(R.menu.menu_favourite_recipe, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_edit) {
+         //here create the dialog that make u edit your favourite list tilte page
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
