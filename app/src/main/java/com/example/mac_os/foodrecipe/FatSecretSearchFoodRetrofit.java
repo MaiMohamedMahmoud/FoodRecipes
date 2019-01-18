@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -50,13 +53,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
+public class FatSecretSearchFoodRetrofit extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     final static private String APP_METHOD = "GET";
     final static private String APP_KEY = "e7c5644c6e59405eb10d3e5b215bb28d";
     final static private String APP_SECRET = "d510bf3fe2e14aa4b673105505ff4f0e";
     final static private String APP_URL = "http://platform.fatsecret.com/rest/server.api";
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
     RecyclerView rvListFood;
+    SwipeRefreshLayout mSwipeRefreshLayout;
     FatSecretSearchFood mFatSecretSearch;
     //private List<Food_> foodDetailsList;
     private List<Food_> foodList;
@@ -71,16 +75,19 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
     Toolbar toolbar;
     String SearchItemKeyWord;
     private SharedPreferences mSharedPreferences;
+    String searchItem;
     public static final String PREFERENCE = "preference";
     Gson gson;
     SharedPreferences.Editor prefsEditor;
+    double page_numbers;
+    int current_page_number;
 
 
     @Override
     protected void onPause() {
         super.onPause();
         //to store the array of object in sharedpref.
-        Toast.makeText(getApplicationContext(),recipesListFav.size()+"onPause",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), recipesListFav.size() + "onPause", Toast.LENGTH_LONG).show();
 
         String json = gson.toJson(recipesListFav);
         prefsEditor.putString("MyFavouriteList", json);
@@ -91,7 +98,8 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_recipe_details, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
+        // return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -100,7 +108,7 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         if (id == R.id.action_settings) {
             Log.i("Fav", recipesListFav.size() + "");
             Toast.makeText(getApplicationContext(), "settings clicked" + recipesListFav.size(), Toast.LENGTH_LONG).show();
-            Intent FavouriteIntent = new Intent(FatSecretSearchFoodRetrofit.this,FavouriteRecipes.class);
+            Intent FavouriteIntent = new Intent(FatSecretSearchFoodRetrofit.this, FavouriteRecipes.class);
             startActivity(FavouriteIntent);
             return false;
         }
@@ -121,13 +129,59 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
             recipesListFav = gson.fromJson(json, type);
         }
         RecipeAdapter.notifyDataSetChanged();
-        Toast.makeText(getApplicationContext(),recipesListFav.size()+"Resume",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), recipesListFav.size() + "Resume", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRefresh() {
+
+        // Fetching data from server
+        loadRecyclerViewData();
+    }
+
+    private void loadRecyclerViewData() {
+        // Showing refresh animation before making http call
+        // mSwipeRefreshLayout.setRefreshing(true);
+        // Stopping swipe refresh
+        Toast.makeText(getApplicationContext(), "jj", Toast.LENGTH_LONG).show();
+        mSwipeRefreshLayout.setRefreshing(true);
+        current_page_number++;
+        if (current_page_number < page_numbers) {
+            searchRecipe(searchItem, current_page_number);
+        }
+        else{
+            Toast.makeText(getApplicationContext(),"No More Recipes to Show",Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_list);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary,
+                android.R.color.holo_green_dark,
+                android.R.color.holo_orange_dark,
+                android.R.color.holo_blue_dark);
+
+        /**
+         * Showing Swipe Refresh animation on activity create
+         * As animation won't start on onCreate, post runnable is used
+         */
+//        mSwipeRefreshLayout.post(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//
+//                mSwipeRefreshLayout.setRefreshing(true);
+//
+//                // Fetching data from server
+//               // loadRecyclerViewData();
+//            }
+//        });
         rvListFood = (RecyclerView) findViewById(R.id.food_list);
         rvListFood.setLayoutManager(new LinearLayoutManager(this));
         foodList = new ArrayList<>();
@@ -145,11 +199,11 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         } else {
             recipesListFav = gson.fromJson(json, type);
         }
-        Toast.makeText(getApplicationContext(),recipesListFav.size()+"onCreate",Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), recipesListFav.size() + "onCreate", Toast.LENGTH_LONG).show();
         foodAdapter = new FatSecretSearchFoodRetrofit.FoodAdapter(foodList);
         RecipeAdapter = new FatSecretSearchFoodRetrofit.RecipeAdapter(recipesList);
         Bundle extras = getIntent().getExtras();
-        String searchItem = extras.getString("SearchItemKeyWord");
+        searchItem = extras.getString("SearchItemKeyWord");
         // Toast.makeText(getApplicationContext(), searchItem, Toast.LENGTH_LONG).show();
         toolbar.setTitle(searchItem);
         toolbar.setTitleTextColor(Color.WHITE);
@@ -158,8 +212,9 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
         mSecretApi = ApiUtils.getFoodService();
         mFatSecretSearch = new FatSecretSearchFood();
         setSupportActionBar(toolbar);
+        current_page_number = 1;
         //searchFood("soup", 1);
-        searchRecipe(searchItem, 1);
+        searchRecipe(searchItem, current_page_number);
 
     }
 
@@ -225,8 +280,15 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
             Log.i("body response recipe", response.body() + "");
             Recipe recipeObj = response.body();
             if (response != null) {
+
                 Recipes recipesDetailsObj = recipeObj.getRecipes();
                 if (recipesDetailsObj != null) {
+
+                    double max = Integer.parseInt(recipesDetailsObj.getTotalResults());
+                    max = Math.ceil((max / 20));
+                    page_numbers = max;
+                    // Toast.makeText(getApplicationContext(),recipesDetailsObj.getTotalResults()+"jkkjkjkjkjk",Toast.LENGTH_LONG).show();
+                    // Toast.makeText(getApplicationContext(),max+"dss",Toast.LENGTH_LONG).show();
                     JsonElement jsonElementRecipes = recipesDetailsObj.getRecipe();
 
                     if (jsonElementRecipes != null) {
@@ -264,11 +326,12 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
                                 }
                                 obj_recipe.setRecipeName(mJsonObject.get("recipe_name").getAsString());
                                 obj_recipe.setRecipeUrl(mJsonObject.get("recipe_url").toString());
-                                recipesList.add(obj_recipe);
+                                recipesList.add(i,obj_recipe);
                             }
                         }
                         // recipesList.addAll(recipesDetailsObj.getRecipe());
                         RecipeAdapter.notifyDataSetChanged();
+
                     } else {
                         Toast.makeText(getApplicationContext(), R.string.no_recipes, Toast.LENGTH_LONG).show();
                         finish();
@@ -279,7 +342,7 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), R.string.no_recipes, Toast.LENGTH_LONG).show();
                     finish();
                 }
-
+                mSwipeRefreshLayout.setRefreshing(false);
             } else {
                 Toast.makeText(getApplicationContext(), R.string.no_recipes, Toast.LENGTH_LONG).show();
                 finish();
@@ -357,11 +420,11 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     buttonFavorite.startAnimation(scaleAnimation);
-                    if(buttonFavorite.isChecked()){
+                    if (buttonFavorite.isChecked()) {
                         recipesListFav.add(mRecipe);
                         Toast.makeText(getApplicationContext(), "is checked", Toast.LENGTH_LONG).show();
 
-                    }else{
+                    } else {
                         for (int i = 0; i < recipesListFav.size(); i++) {
                             if (recipesListFav.get(i).getRecipeId() == mRecipe.getRecipeId()) {
                                 recipesListFav.remove(mRecipe);
@@ -395,11 +458,11 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity {
 
 
             Picasso.with(getApplicationContext()).
-                            load(mRecipe.getRecipeImage()).
-                            fit().
-                            centerCrop().
-                            transform(new PicassoCircleTransformation()).
-                            into(square_image_recipe_item);
+                    load(mRecipe.getRecipeImage()).
+                    fit().
+                    centerCrop().
+                    transform(new PicassoCircleTransformation()).
+                    into(square_image_recipe_item);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
