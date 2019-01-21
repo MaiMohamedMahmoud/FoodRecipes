@@ -159,6 +159,11 @@ public class FatSecretSearchFoodRetrofit extends AppCompatActivity implements Sw
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_list);
+        CheckConnection check = new CheckConnection(FatSecretSearchFoodRetrofit.this);
+        if(!check.isConnected()){
+            check.show();
+            finish();
+        }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         mSwipeRefreshLayout.setOnRefreshListener(this);

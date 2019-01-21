@@ -60,6 +60,12 @@ public class RecipeDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_details);
+        CheckConnection check = new CheckConnection(RecipeDetails.this);
+        if(!check.isConnected()){
+            check.show();
+            finish();
+        }
+
         Bundle extras = getIntent().getExtras();
         Long recipeId = extras.getLong("recipeId");
         mSecretApi = ApiUtils.getFoodService();

@@ -108,6 +108,11 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recipe_type_list);
+        CheckConnection check = new CheckConnection(MainActivity.this);
+        if(!check.isConnected()){
+            check.show();
+            finish();
+        }
         recipesTypesList = new ArrayList<>();
         mSecretApi = ApiUtils.getFoodService();
         mFatSecretSearch = new FatSecretSearchFood();

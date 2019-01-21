@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mac_os.foodrecipe">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -14,9 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".MainActivity"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".splachActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,16 +28,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".FatSecretSearchFoodRetrofit"
+        <activity
+            android:name=".FatSecretSearchFoodRetrofit"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".RecipeDetails"
             android:label="@string/title_activity_recipe_details"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".FavouriteRecipes"
+        <activity
+            android:name=".FavouriteRecipes"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
 
         </activity>
+        <activity android:name=".NoInternet"></activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3e18432fe2dd9a783a5cca3eb805a4d050860a64" />
     </application>
 
 </manifest>
